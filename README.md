@@ -21,7 +21,7 @@ Mục tiêu chính là đo lường và phân tích sự **đánh đổi (trade-
 
 1.  Clone kho chứa này về máy:
     ```bash
-    git clone [https://github.com/longhn-0108/Project-1-HUST.git](https://github.com/longhn-0108/Project-1-HUST.git)
+    git clone [https://github.com/longhn-0108/Green_AI.git](https://github.com/longhn-0108/Green_AI.git)
     cd TEN_REPO_CUA_BAN
     ```
 
@@ -74,6 +74,9 @@ Bảng phân tích cuối cùng sẽ so sánh các số liệu quan trọng:
 | Mô hình | Kỹ thuật | Accuracy (%) | Năng lượng (kWh) | Thời gian (giờ) |
 | :--- | :--- | :---: | :---: | :---: |
 | ResNet-50 | **Baseline** | (chưa có) | (chưa có) | (chưa có) |
-| ResNet-50 | Pruning | (chưa có) | (chưa có) | (chưa có) |
+| ResNet-50 | Pruning 30% | (chưa có) | (chưa có) | (chưa có) |
+| ResNet-50 | Pruning 50% | (chưa có) | (chưa có) | (chưa có) |
+| ResNet-50 | Pruning 70% | (chưa có) | (chưa có) | (chưa có) |
 | ResNet-50 | Quantization | (chưa có) | (chưa có) | (chưa có) |
+
 | MobileNetV2 | Baseline | (chưa có) | (chưa có) | (chưa có) |
