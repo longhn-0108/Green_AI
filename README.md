@@ -43,8 +43,6 @@ Mục tiêu chính là đo lường và phân tích sự **đánh đổi (trade-
 
 ## 🚀 Cách chạy (Ví dụ cấu trúc)
 
-*(Bạn sẽ cập nhật phần này khi viết code)*
-
 1.  **Huấn luyện mô hình Baseline (ResNet-50):**
     ```bash
     python train.py --model resnet50 --dataset cifar100 --output_dir ./results/baseline
@@ -67,16 +65,21 @@ Mục tiêu chính là đo lường và phân tích sự **đánh đổi (trade-
 
 ---
 
-## 📊 Kết quả (Dự kiến)
+## 📊 Kết quả 
 
 Bảng phân tích cuối cùng sẽ so sánh các số liệu quan trọng:
 
-| Mô hình | Kỹ thuật | Accuracy (%) | Năng lượng (kWh) | Thời gian (giờ) |
+| Mô hình | Kỹ thuật | Accuracy (%) | Năng lượng (kWh) | Thời gian (giờ) | Thiết bị |
 | :--- | :--- | :---: | :---: | :---: |
-| ResNet-50 | **Baseline** | (chưa có) | (chưa có) | (chưa có) |
-| ResNet-50 | Pruning 30% | (chưa có) | (chưa có) | (chưa có) |
-| ResNet-50 | Pruning 50% | (chưa có) | (chưa có) | (chưa có) |
-| ResNet-50 | Pruning 70% | (chưa có) | (chưa có) | (chưa có) |
-| ResNet-50 | Quantization | (chưa có) | (chưa có) | (chưa có) |
-
-| MobileNetV2 | Baseline | (chưa có) | (chưa có) | (chưa có) |
+| ResNet-50 | **Baseline** | 48.95% | 5.723379 kWh | ~44h | CPU Local |
+| ResNet-50 | **Pruning 30%** | 70% | 5.707134 kWh | ~43.9h | CPU Local |
+| ResNet-50 | **Pruning 50%** | 75.04% | 5.702441 kWh | ~43.8h | CPU Local |
+| ResNet-50 | **Pruning 70%** | 74.78% | 5.698115 kWh | ~43.8h | CPU Local |
+| ResNet-50 | **Quantization** | (chưa có) | (chưa có) | (chưa có) | CPU Local |
+| ResNet-50 | **Baseline** | 74.72% | 0.077634 kWh | ~1.2h | GPU Kaggle |
+| ResNet-50 | **Pruning 30%** | 74.89% | 0.077607 kWh | ~1.2h | GPU Kaggle |
+| ResNet-50 | **Pruning 50%** | 75.04% | 0.077600 kWh | ~1.2h | GPU Kaggle |
+| ResNet-50 | **Pruning 70%** | 74.78% | 0.077867 kWh | ~1.2h | GPU Kaggle |
+| ResNet-50 | **Quantization** | (chưa có) | (chưa có) | (chưa có) | GPU Kaggle |
+| MobileNetV2 | **Baseline** | 71.55% | 1.447343 kWh | ~11.1h | CPU Local |
+| MobileNetV2 | **Baseline** | 71.98% | 0.019623 kWh | ~0.3h | GPU Kaggle |
