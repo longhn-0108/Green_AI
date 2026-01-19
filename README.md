@@ -70,7 +70,7 @@ Mục tiêu chính là đo lường và phân tích sự **đánh đổi (trade-
 Bảng phân tích cuối cùng sẽ so sánh các số liệu quan trọng:
 
 | Mô hình | Kỹ thuật | Accuracy (%) | Năng lượng (kWh) | Thời gian (giờ) | Thiết bị |
-| :--- | :--- | :---: | :---: | :---: |
+| :--- | :--- | :---: | :---: | :---: | :--- |
 | ResNet-50 | **Baseline** | 48.95% | 5.723379 kWh | ~44h | CPU Local |
 | ResNet-50 | **Pruning 30%** | 70% | 5.707134 kWh | ~43.9h | CPU Local |
 | ResNet-50 | **Pruning 50%** | 75.04% | 5.702441 kWh | ~43.8h | CPU Local |

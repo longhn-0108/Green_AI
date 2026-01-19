@@ -1,84 +1,55 @@
+import os
 import torch
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader, random_split
+from .config import Config
 
-# Tỷ lệ chia tập Validation (10%)
-VAL_SPLIT_SIZE = 0.1 
-
-def get_cifar100_loaders(batch_size: int = 64, augment: bool = True):
+def get_cifar100_loaders(augment: bool = True):
     """
-    Tải CIFAR-100 với tùy chọn Augmentation.
+    Tạo DataLoaders cho CIFAR-100.
     
     Args:
-        augment (bool): 
-            - True: Dùng cho ResNet (Cắt + Lật) để chống Overfitting.
-            - False: Dùng cho MobileNet hoặc Quantization (Chỉ Lật) để ổn định.
+        augment (bool): Có sử dụng Data Augmentation hay không (Tắt khi Quantization).
     """
-    
-    # 1. Định nghĩa Transform cho tập TRAIN
-    if augment:
-        # Augmentation MẠNH (Dành cho ResNet)
-        train_transform = transforms.Compose([
-            transforms.RandomCrop(32, padding=4), # Cắt ngẫu nhiên
-            transforms.RandomHorizontalFlip(),    # Lật ngang
-            transforms.ToTensor(),
-            transforms.Normalize(
-                mean=[0.5071, 0.4867, 0.4408], 
-                std=[0.2675, 0.2565, 0.2761]
-            )
-        ])
-        print("[DATA] Mode: Augmentation MẠNH (Crop + Flip)")
-    else:
-        # Augmentation NHẸ (Dành cho MobileNet / Quantization)
-        train_transform = transforms.Compose([
-            transforms.RandomHorizontalFlip(), # Chỉ lật ngang (an toàn)
-            transforms.ToTensor(),
-            transforms.Normalize(
-                mean=[0.5071, 0.4867, 0.4408], 
-                std=[0.2675, 0.2565, 0.2761]
-            )
-        ])
-        print("[DATA] Mode: Augmentation NHẸ (Chỉ Flip)")
+    # Mean/Std chuẩn của CIFAR-100
+    stats = ((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761))
 
-    # 2. Định nghĩa Transform cho tập TEST/VALIDATION (Giữ nguyên)
+    # Pipeline tiền xử lý
+    if augment:
+        train_transform = transforms.Compose([
+            transforms.RandomCrop(Config.IMG_SIZE, padding=4, padding_mode='reflect'),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            transforms.Normalize(*stats)
+        ])
+    else:
+        train_transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(*stats)
+        ])
+
     test_transform = transforms.Compose([
         transforms.ToTensor(),
-        transforms.Normalize(
-            mean=[0.5071, 0.4867, 0.4408], 
-            std=[0.2675, 0.2565, 0.2761]
-        )
+        transforms.Normalize(*stats)
     ])
 
-    # 3. Tải dữ liệu
-    full_train_dataset = datasets.CIFAR100(
-        root='./data', train=True, download=True, transform=train_transform 
-    )
-    
-    test_dataset = datasets.CIFAR100(
-        root='./data', train=False, download=True, transform=test_transform
+    # Tải dữ liệu
+    train_data = datasets.CIFAR100(root=Config.DATA_ROOT, train=True, download=True, transform=train_transform)
+    test_data = datasets.CIFAR100(root=Config.DATA_ROOT, train=False, download=True, transform=test_transform)
+
+    # Chia tập Validation (10%)
+    val_size = int(0.1 * len(train_data))
+    train_size = len(train_data) - val_size
+    train_subset, val_subset = random_split(
+        train_data, [train_size, val_size], 
+        generator=torch.Generator().manual_seed(Config.SEED)
     )
 
-    # 4. Chia tập Train/Val
-    val_size = int(len(full_train_dataset) * VAL_SPLIT_SIZE)
-    train_size = len(full_train_dataset) - val_size
-    
-    train_subset, val_subset = random_split(full_train_dataset, [train_size, val_size])
+    # Xử lý lỗi đa luồng trên Windows
+    num_workers = 0 if os.name == 'nt' else Config.NUM_WORKERS
 
-    # Kiểm tra có GPU không để bật pin_memory
-    is_cuda = torch.cuda.is_available()
-
-    # 5. Tạo Loader
-    train_loader = DataLoader(
-        train_subset, batch_size=batch_size, shuffle=True, 
-        num_workers=2, pin_memory=is_cuda
-    )
-    val_loader = DataLoader(
-        val_subset, batch_size=batch_size, shuffle=False, 
-        num_workers=2, pin_memory=is_cuda
-    )
-    test_loader = DataLoader(
-        test_dataset, batch_size=batch_size, shuffle=False, 
-        num_workers=2, pin_memory=is_cuda
-    )
+    train_loader = DataLoader(train_subset, batch_size=Config.BATCH_SIZE, shuffle=True, num_workers=num_workers)
+    val_loader = DataLoader(val_subset, batch_size=Config.BATCH_SIZE, shuffle=False, num_workers=num_workers)
+    test_loader = DataLoader(test_data, batch_size=Config.BATCH_SIZE, shuffle=False, num_workers=num_workers)
     
     return train_loader, val_loader, test_loader

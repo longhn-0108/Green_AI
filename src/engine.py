@@ -1,13 +1,9 @@
 import torch
-from torch import nn
-from tqdm import tqdm
 
 def train_one_epoch(model, dataloader, criterion, optimizer, device):
+    """Huấn luyện 1 epoch."""
     model.train()
     running_loss = 0.0
-    
-    # progress_bar = tqdm(dataloader, desc="Training", leave=False) 
-    # (Tạm tắt leave=False để log đỡ bị trôi nếu muốn)
     
     for images, labels in dataloader:
         images, labels = images.to(device), labels.to(device)
@@ -19,10 +15,11 @@ def train_one_epoch(model, dataloader, criterion, optimizer, device):
         optimizer.step()
         
         running_loss += loss.item() * images.size(0)
-
+    
     return running_loss / len(dataloader.dataset)
 
 def evaluate(model, dataloader, criterion, device):
+    """Đánh giá mô hình."""
     model.eval()
     running_loss = 0.0
     correct = 0
@@ -34,11 +31,11 @@ def evaluate(model, dataloader, criterion, device):
             outputs = model(images)
             loss = criterion(outputs, labels)
             
+            running_loss += loss.item() * images.size(0)
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
-            running_loss += loss.item() * images.size(0)
-
-    accuracy = correct / total
-    epoch_loss = running_loss / len(dataloader.dataset)
-    return epoch_loss, accuracy
+            
+    acc = correct / total
+    avg_loss = running_loss / len(dataloader.dataset)
+    return avg_loss, acc
